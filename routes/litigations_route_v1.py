@@ -50,3 +50,33 @@ async def fetch_litigations(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error fetching litigations",
         ) from e
+
+
+@router.get("/{litigation_id}")
+async def fetch_litigation_by_id(
+    litigation_id: str,
+    repository: DatabaseRepository = Depends(get_database_repository),
+):
+    """
+    retrieve a specific litigation by its ID from database (requires authentication)
+    """
+    logger.info(f"Fetching litigation with ID: {litigation_id}")
+
+    try:
+        litigation = repository.get_litigation_by_id(litigation_id)
+        if litigation is None:
+            logger.warning(f"Litigation with ID {litigation_id} not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Litigation with ID {litigation_id} not found",
+            )
+        logger.info(f"Successfully fetched litigation with ID: {litigation_id}")
+        return {"data": litigation}
+    except HTTPException:
+        raise
+    except Exception as e:  # pylint: disable=broad-except
+        logger.error(f"Error fetching litigation with ID {litigation_id}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching litigation with ID {litigation_id}",
+        ) from e
