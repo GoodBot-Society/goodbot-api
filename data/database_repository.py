@@ -306,7 +306,6 @@ class DatabaseRepository:
         """
         try:
             response = self.client.rpc("get_litigations").execute()
-            print(response.data)
             parsed_response = [
                 self.parse_litigation_response(item) for item in response.data
             ]
@@ -321,6 +320,7 @@ class DatabaseRepository:
         :param litigation_id: the id of the litigation
         :return: litigation data or None if not found
         """
+
         try:
             response = self.client.rpc(
                 "get_litigations", {"litigation_id": litigation_id}
