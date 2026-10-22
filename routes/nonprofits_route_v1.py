@@ -5,7 +5,8 @@ nonprofits data operations route v1
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from data.ai_service import AIService
-from data.database_repository import DatabaseRepository
+from data.entity_service import EntityService
+from data.nonprofit_service import NonprofitService
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -17,12 +18,22 @@ router = APIRouter(
 )
 
 
-def get_database_repository() -> DatabaseRepository:
+def get_entity_service() -> EntityService:
     """
-    dependency to get the DatabaseRepository instance.
-    This allows for easy testing and mocking of the repository.
+    dependency to get the EntityService instance.
+    This allows for easy testing and mocking of the service.
     """
-    return DatabaseRepository()
+    return EntityService()
+
+
+def get_nonprofit_service(
+    entity_service: EntityService = Depends(get_entity_service),
+) -> NonprofitService:
+    """
+    dependency to get the NonprofitService instance.
+    This allows for easy testing and mocking of the service.
+    """
+    return NonprofitService(entity_service=entity_service)
 
 
 def get_ai_service() -> AIService:
@@ -41,7 +52,7 @@ async def get_nonprofits(
     page_size: int = Query(
         default=10, ge=1, le=100, description="Number of items per page"
     ),
-    repository: DatabaseRepository = Depends(get_database_repository),
+    repository: NonprofitService = Depends(get_nonprofit_service),
 ):
     """
     retrieve all nonprofits with pagination
@@ -85,7 +96,7 @@ async def generate_entity_summary(service: AIService = Depends(get_ai_service)):
 
 @router.get("/{nonprofit_id}")
 async def get_nonprofit_by_id(
-    nonprofit_id: str, repository: DatabaseRepository = Depends(get_database_repository)
+    nonprofit_id: str, repository: EntityService = Depends(get_entity_service)
 ):
     """
     retrieve nonprofit entity by nonprofit id

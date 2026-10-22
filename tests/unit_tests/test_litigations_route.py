@@ -8,7 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from api.main import app
-from routes.litigations_route_v1 import get_database_repository
+from routes.litigations_route_v1 import get_litigation_service
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def mock_repo() -> MagicMock:
 
 @pytest.fixture
 def client(mock_repo):
-    app.dependency_overrides[get_database_repository] = lambda: mock_repo
+    app.dependency_overrides[get_litigation_service] = lambda: mock_repo
     client = TestClient(app)
     yield client
     app.dependency_overrides = {}

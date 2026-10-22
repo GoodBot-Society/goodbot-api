@@ -5,21 +5,21 @@ import pytest
 
 class TestDatabaseHomepageRepository:
     @pytest.mark.asyncio
-    async def test_get_homepage_data(self, repository):
+    async def test_get_homepage_data(self, home_service):
         response = MagicMock()
         response.data = [{"id": 1}]
-        repository.client.rpc.return_value.execute.return_value = response
+        home_service.client.rpc.return_value.execute.return_value = response
 
-        result = await repository.get_homepage_data()
+        result = await home_service.get_homepage_data()
 
         assert result == response.data
-        repository.client.rpc.assert_called_once_with("get_homepage_data2")
+        home_service.client.rpc.assert_called_once_with("get_homepage_data2")
 
     @pytest.mark.asyncio
-    async def test_get_homepage_data_exception(self, repository):
-        repository.client.rpc.side_effect = Exception("DB error")
+    async def test_get_homepage_data_exception(self, home_service):
+        home_service.client.rpc.side_effect = Exception("DB error")
 
-        assert await repository.get_homepage_data() is None
+        assert await home_service.get_homepage_data() is None
 
     @pytest.mark.asyncio
     async def test_get_structural_subfactors(self, repository):

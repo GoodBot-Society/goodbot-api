@@ -4,7 +4,7 @@ experts data operations route v1
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from data.database_repository import DatabaseRepository
+from data.expert_service import ExpertService
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -16,12 +16,12 @@ router = APIRouter(
 )
 
 
-def get_database_repository() -> DatabaseRepository:
+def get_expert_service() -> ExpertService:
     """
-    dependency to get the DatabaseRepository instance.
-    This allows for easy testing and mocking of the repository.
+    dependency to get the ExpertService instance.
+    This allows for easy testing and mocking of the service.
     """
-    return DatabaseRepository()
+    return ExpertService()
 
 
 @router.get("/")
@@ -32,7 +32,7 @@ async def get_experts(
     page_size: int = Query(
         default=10, ge=-1, le=100, description="Number of items per page, -1 for all"
     ),
-    repository: DatabaseRepository = Depends(get_database_repository),
+    repository: ExpertService = Depends(get_expert_service),
 ):
     """
     retrieve all experts with pagination
@@ -64,7 +64,7 @@ async def get_experts(
 
 @router.get("/{expert_id}")
 async def get_expert_by_id(
-    expert_id: str, repository: DatabaseRepository = Depends(get_database_repository)
+    expert_id: str, repository: ExpertService = Depends(get_expert_service)
 ):
     """
     retrieve expert by id

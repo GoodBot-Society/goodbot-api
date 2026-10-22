@@ -4,7 +4,7 @@ litigations data operations route v1
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from data.database_repository import DatabaseRepository
+from data.litigation_service import LitigationService
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -16,17 +16,17 @@ router = APIRouter(
 )
 
 
-def get_database_repository() -> DatabaseRepository:
+def get_litigation_service() -> LitigationService:
     """
-    dependency to get the DatabaseRepository instance.
-    This allows for easy testing and mocking of the repository.
+    dependency to get the LitigationService instance.
+    This allows for easy testing and mocking of the service.
     """
-    return DatabaseRepository()
+    return LitigationService()
 
 
 @router.get("/")
 async def fetch_litigations(
-    repository: DatabaseRepository = Depends(get_database_repository),
+    repository: LitigationService = Depends(get_litigation_service),
 ):
     """
     retrieve all litigations from database (requires authentication)
@@ -55,7 +55,7 @@ async def fetch_litigations(
 @router.get("/{litigation_id}")
 async def fetch_litigation_by_id(
     litigation_id: str,
-    repository: DatabaseRepository = Depends(get_database_repository),
+    repository: LitigationService = Depends(get_litigation_service),
 ):
     """
     retrieve a specific litigation by its ID from database (requires authentication)

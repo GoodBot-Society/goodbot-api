@@ -4,7 +4,7 @@ text search data operations route v1
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from data.database_repository import DatabaseRepository
+from data.search_service import SearchService
 from utils.logger import get_logger
 
 logger = get_logger(__name__)
@@ -14,18 +14,16 @@ router = APIRouter(
 )
 
 
-def get_database_repository() -> DatabaseRepository:
+def get_search_service() -> SearchService:
     """
-    dependency to get the DatabaseRepository instance.
-    This allows for easy testing and mocking of the repository.
+    dependency to get the SearchService instance.
+    This allows for easy testing and mocking of the service.
     """
-    return DatabaseRepository()
+    return SearchService()
 
 
 @router.get("/{query}")
-async def search(
-    query: str, repository: DatabaseRepository = Depends(get_database_repository)
-):
+async def search(query: str, repository: SearchService = Depends(get_search_service)):
     """
     search for entities and experts by keywords
     """

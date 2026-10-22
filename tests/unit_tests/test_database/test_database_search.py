@@ -5,7 +5,7 @@ import pytest
 
 class TestDatabaseSearch:
     @pytest.mark.asyncio
-    async def test_search_by_keywords(self, repository):
+    async def test_search_by_keywords(self, search_service):
         entity_response = MagicMock()
         entity_response.data = [{"id": "entity1"}]
 
@@ -15,10 +15,10 @@ class TestDatabaseSearch:
         entity_search_response = MagicMock()
         entity_search_response.data = [{"id": "entity1"}]
 
-        repository.client.from_.return_value.select.return_value.text_search.return_value.execute.return_value = (
+        search_service.client.from_.return_value.select.return_value.text_search.return_value.execute.return_value = (
             entity_response
         )
-        repository.client.rpc.return_value.execute.side_effect = [
+        search_service.client.rpc.return_value.execute.side_effect = [
             expert_response,
             entity_search_response,
         ]
@@ -26,11 +26,11 @@ class TestDatabaseSearch:
         nonprofit_response = MagicMock()
         nonprofit_response.data = [{"id": "np1", "entity_id": "entity1"}]
 
-        repository.client.table.return_value.select.return_value.eq.return_value.execute.return_value = (
+        search_service.client.table.return_value.select.return_value.eq.return_value.execute.return_value = (
             nonprofit_response
         )
 
-        result = await repository.search_by_keywords("education health")
+        result = await search_service.search_by_keywords("education health")
 
         assert result == {
             "nonprofits": [{"id": "entity1"}],
@@ -38,7 +38,7 @@ class TestDatabaseSearch:
         }
 
     @pytest.mark.asyncio
-    async def test_search_by_keywords_removes_special_characters(self, repository):
+    async def test_search_by_keywords_removes_special_characters(self, search_service):
         entity_response = MagicMock()
         entity_response.data = []
 
@@ -48,15 +48,15 @@ class TestDatabaseSearch:
         entity_search_response = MagicMock()
         entity_search_response.data = []
 
-        repository.client.from_.return_value.select.return_value.text_search.return_value.execute.return_value = (
+        search_service.client.from_.return_value.select.return_value.text_search.return_value.execute.return_value = (
             entity_response
         )
-        repository.client.rpc.return_value.execute.side_effect = [
+        search_service.client.rpc.return_value.execute.side_effect = [
             expert_response,
             entity_search_response,
         ]
 
-        result = await repository.search_by_keywords("hello! @world#")
+        result = await search_service.search_by_keywords("hello! @world#")
 
         assert result == {
             "nonprofits": [],
@@ -64,8 +64,8 @@ class TestDatabaseSearch:
         }
 
     @pytest.mark.asyncio
-    async def test_search_by_keywords_empty_after_sanitization(self, repository):
-        result = await repository.search_by_keywords("!@#$%^&*()")
+    async def test_search_by_keywords_empty_after_sanitization(self, search_service):
+        result = await search_service.search_by_keywords("!@#$%^&*()")
 
         assert result == {
             "nonprofits": [],
@@ -73,7 +73,7 @@ class TestDatabaseSearch:
         }
 
     @pytest.mark.asyncio
-    async def test_search_by_keywords_exception(self, repository):
-        repository.client.from_.side_effect = Exception("DB error")
+    async def test_search_by_keywords_exception(self, search_service):
+        search_service.client.from_.side_effect = Exception("DB error")
 
-        assert await repository.search_by_keywords("test") is None
+        assert await search_service.search_by_keywords("test") is None
