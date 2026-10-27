@@ -19,7 +19,7 @@ class HomeService:
         get homepage data through join queries from database
         """
         try:
-            response = self.client.rpc("get_homepage_data2").execute()
+            response = self.client.rpc("get_homepage_data").execute()
             return response.data
         except Exception as e:  # pylint: disable=broad-except
             logger.error(f"Error getting homepage data: {e}")
