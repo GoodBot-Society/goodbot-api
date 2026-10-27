@@ -13,7 +13,7 @@ class TestDatabaseHomepageRepository:
         result = await home_service.get_homepage_data()
 
         assert result == response.data
-        home_service.client.rpc.assert_called_once_with("get_homepage_data2")
+        home_service.client.rpc.assert_called_once_with("get_homepage_data")
 
     @pytest.mark.asyncio
     async def test_get_homepage_data_exception(self, home_service):
