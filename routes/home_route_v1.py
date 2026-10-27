@@ -4,7 +4,7 @@ home page data operations route v1
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from data.database_repository import DatabaseRepository
+from data.home_service import HomeService
 from model.home_v1 import HomePageData
 from usecase.get_homepage_data import GetHomePageData
 from utils.logger import get_logger
@@ -16,15 +16,17 @@ router = APIRouter(
 )
 
 
-def get_database_repository() -> DatabaseRepository:
+def get_homepage_service() -> HomeService:
     """
-    dependency to get the DatabaseRepository instance.
-    This allows for easy testing and mocking of the repository.
+    dependency to get the HomeService instance.
+    This allows for easy testing and mocking of the service.
     """
-    return DatabaseRepository()
+    return HomeService()
 
 
-def get_homepage_data(repository: DatabaseRepository = Depends(get_database_repository)) -> GetHomePageData:
+def get_homepage_data(
+    repository: HomeService = Depends(get_homepage_service),
+) -> GetHomePageData:
     """
     dependency to get the GetHomePageData use case instance.
     This allows for easy testing and mocking of the use case.
