@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     google_api_key: str
 
     # CORS Configuration
-    cors_origins: str = "http://localhost,http://localhost:3000,http://localhost:8080"
+    cors_origins: str = "http://localhost,http://localhost:3000,http://localhost:8080,https://www.responsibletechrepo.com,https://develop.responsibletechrepo.com"
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", case_sensitive=False, extra="ignore"
